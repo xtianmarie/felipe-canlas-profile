@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Felipe Canlas: A Profile in Leadership & Impact</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Visualization & Content Choices:
+        1. Report Info: Executive Summary. Goal: Inform (Overview). Viz/Presentation: Text block. Interaction: None. Justification: Standard introduction. Library/Method: HTML/Tailwind.
+        2. Report Info: Biography and Career Trajectory. Goal: Inform (Background). Viz/Presentation: Text block with highlighted key moments. Interaction: None. Justification: Narrative content best presented as text. Library/Method: HTML/Tailwind.
+        3. Report Info: WAH-NGO Growth Data (Table 1). Goal: Inform & Compare (Growth Metrics). Viz/Presentation: Key Metric Cards (HTML/Tailwind) displaying initial vs. current figures for facilities, LGUs, funding, team size. Interaction: Subtle hover effects. Justification: Clear, concise presentation of comparative stats, more direct than a chart for two data points. Library/Method: HTML/Tailwind.
+        4. Report Info: Management Profile & Leadership Style. Goal: Inform & Explain (Leadership Qualities). Viz/Presentation: Combined text block, using subheadings for clarity. Blockquotes for direct quotes. Interaction: LLM-powered "Generate Leadership Insight" button. Justification: Provides dynamic, AI-generated insights into his leadership. Library/Method: HTML/Tailwind, Vanilla JS, Gemini API.
+        5. Report Info: Cultivating Organizational Culture. Goal: Inform & Explain (Values & Community). Viz/Presentation: Text block. Interaction: None. Justification: Narrative content. Library/Method: HTML/Tailwind.
+        6. Report Info: Power and Influence (Table 2 Data). Goal: Inform & Organize (Policy Impact). Viz/Presentation: Interactive HTML table (Tailwind styled) with columns for Legislation/Policy, Role, and Tangible Outcomes. Interaction: Client-side JavaScript for sorting by column and text-based filtering. New LLM-powered "✨ Explain Impact" button per row. Justification: Effective for structured data; interactivity improves exploration and LLM provides deeper context. Library/Method: HTML/Tailwind, Vanilla JS, Gemini API.
+        7. Report Info: Future Vision & Conclusion. Goal: Inform (Outlook). Viz/Presentation: Combined text block. Interaction: None. Justification: Concludes the profile. Library/Method: HTML/Tailwind.
+        CONFIRMING NO SVG/Mermaid, supporting the DESIGNED structure. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FFFAF0; /* FloralWhite - warm neutral */
+            color: #4A5568; /* Gray-700 - dark gray for text */
+        }
+        .section-title {
+            color: #C05621; /* Orange-700 - primary accent */
+        }
+        .nav-link {
+            transition: color 0.3s ease;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #C05621; /* Orange-700 */
+            border-bottom: 2px solid #C05621;
+        }
+        .metric-card {
+            background-color: #FFF8DC; /* Cornsilk - light warm card */
+            border: 1px solid #FBD38D; /* Orange-300 */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .table-interactive th {
+            cursor: pointer;
+        }
+        .table-interactive th:hover {
+            background-color: #FEEBC8; /* Orange-100 */
+        }
+        .highlight {
+            background-color: #FEEBC8; /* Orange-100 */
+            font-weight: 600;
+        }
+        blockquote {
+            border-left: 4px solid #C05621; /* Orange-700 */
+            padding-left: 1rem;
+            margin-left: 0;
+            font-style: italic;
+            color: #718096; /* Gray-600 */
+        }
+        .content-section {
+            padding-top: 6rem; /* Adjust based on nav height */
+            margin-top: -4rem; /* Adjust based on nav height - for scroll spy */
+        }
+        .table-container {
+            max-height: 500px; /* Or any desired height */
+            overflow-y: auto;
+        }
+         /* Custom scrollbar for webkit browsers */
+        .table-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        .table-container::-webkit-scrollbar-track {
+            background: #FFFAF0; /* FloralWhite */
+        }
+        .table-container::-webkit-scrollbar-thumb {
+            background-color: #FBD38D; /* Orange-300 */
+            border-radius: 10px;
+            border: 2px solid #FFFAF0; /* FloralWhite */
+        }
+         /* For Firefox */
+        .table-container {
+            scrollbar-width: thin;
+            scrollbar-color: #FBD38D #FFFAF0;
+        }
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .loading-indicator {
+            display: none;
+            text-align: center;
+            margin-top: 1rem;
+            color: #C05621;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-orange-600 text-white p-6 shadow-md fixed top-0 left-0 right-0 z-50">
+        <div class="container mx-auto flex flex-col sm:flex-row justify-between items-center">
+            <h1 class="text-2xl font-bold tracking-tight">Felipe Canlas: Leadership & Impact</h1>
+            <nav class="mt-4 sm:mt-0">
+                <ul class="flex space-x-3 sm:space-x-4 text-sm sm:text-base">
+                    <li><a href="#home" class="nav-link px-2 py-1 rounded-md">Home</a></li>
+                    <li><a href="#journey" class="nav-link px-2 py-1 rounded-md">Journey</a></li>
+                    <li><a href="#wah-milestones" class="nav-link px-2 py-1 rounded-md">WAH Milestones</a></li>
+                    <li><a href="#leadership-approach" class="nav-link px-2 py-1 rounded-md">Leadership</a></li>
+                    <li><a href="#culture-values" class="nav-link px-2 py-1 rounded-md">Culture</a></li>
+                    <li><a href="#policy-influence" class="nav-link px-2 py-1 rounded-md">Policy Influence</a></li>
+                    <li><a href="#future-outlook" class="nav-link px-2 py-1 rounded-md">Outlook</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8 pt-32">
+
+        <section id="home" class="content-section mb-16">
+            <h2 class="text-3xl font-bold mb-6 section-title border-b-2 border-orange-500 pb-2">Executive Summary</h2>
+            <div class="space-y-4 text-lg leading-relaxed bg-white p-6 rounded-lg shadow">
+                <p>This section provides a concise overview of Felipe Canlas's impactful career. It highlights his journey from a financially rewarding consultancy to founding the Wireless Access for Health (WAH) NGO, driven by a commitment to creating lasting social value. You'll get a glimpse into his strategic management, transformative leadership, dedication to organizational culture, and significant influence on public health policy in the Philippines.</p>
+                <p>Felipe Canlas stands as a leading figure in Philippine public health and digital innovation. His career shows a deep dedication to social impact, moving beyond typical financial goals. He left a high-earning consulting career to found the Wireless Access for Health (WAH) NGO, driven by a desire to create lasting value. This profile details his sharp management skills, showing how he scales initiatives and builds financial independence for public health programs. It explores his leadership style, which transforms and collaborates, inspiring his team and building strong public-private partnerships. The piece also examines his commitment to a strong organizational culture, emphasizing community and shared mission. He extends this by mentoring other civil society organizations. Finally, it analyzes how he understands and uses power and influence. His earned credibility has has led to important policy changes and improved healthcare access for underserved communities across the Philippines. Canlas is a resilient change-maker, guiding WAH to greater success and wider societal impact.</p>
+            </div>
+        </section>
+
+        <section id="journey" class="content-section mb-16">
+            <h2 class="text-3xl font-bold mb-6 section-title border-b-2 border-orange-500 pb-2">The Journey: Biography & Career Trajectory</h2>
+            <div class="space-y-6 bg-white p-6 rounded-lg shadow">
+                 <p class="text-lg leading-relaxed mb-4">Discover the foundational experiences and pivotal moments that shaped Felipe Canlas's path. This section traces his academic background, early professional roles, and the crucial decision to dedicate his career to public health, culminating in the establishment of WAH-NGO. Understanding his journey provides context for his motivations and achievements.</p>
+                <div>
+                    <h3 class="text-2xl font-semibold mb-3 text-orange-600">Educational Foundation and Early Career</h3>
+                    <p>Felipe Canlas's journey into public health leadership began with a strong academic background and varied early experiences. He holds an MA in Public Administration, specializing in International Public Policy, Environment, and Development Studies, from International Christian University, Tokyo (2006). Before this, he earned an MA in International Studies from the University of the Philippines, Diliman (2004). His undergraduate degree, an A.B. in Communication Research from the University of the Philippines, Diliman (1998), gave him skills in new media, communications planning, and development communication. This broad education helped him understand complex social problems and create effective solutions.</p>
+                    <p class="mt-2">His early professional life shaped his abilities and his drive to serve. He worked as an Administrative Officer IV (Deputy City Administrator) for Mandaluyong City from 1996 to 2004. There, he gained valuable experience in local governance, project planning, and working with various groups, including civic organizations, donor communities, and government agencies. This early public service likely sparked his passion for leadership and making a real difference. Later, he served as a Program Officer for Young Liberals and Democrats of Asia (YLDA) and Fur Die Freiheit (FNF) (2008-2009), Assistant Project Manager for USAID – Energy and Clean Air Project (2009-2010), and Communications Specialist for UNICEF/UN-MDGF (2010-2011). These roles gave him broad exposure to program management, policy advocacy, strategic communication, and international development work. While the profile does not name his early mentors, his strong commitment to mentoring his own team suggests he values guidance and inspiration in professional growth, a value likely shaped by positive influences in his past.</p>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-semibold mb-3 text-orange-600">The Pivotal Transition: Consultant to Founder</h3>
+                    <p>A key moment in Canlas's career was his move from consultant to founder. Before starting WAH-NGO, he consulted for various donor organizations, including RTI International for USAID. This work offered "tremendous financial upside" but did not provide the "sense of fulfillment" or the chance to "create something of lasting value and impact" he sought. This inner drive led to a major career shift.</p>
+                    <blockquote class="my-4 p-4 bg-orange-50 rounded-md">
+                        As his work for Qualcomm Wireless Reach and the WAH pilot project neared its end, Canlas faced a crucial decision. He wanted to move from simply measuring results for others to directly creating and sustaining a real, impactful initiative. He aimed to "become more" and engage in work that offered deep, long-term societal benefit.
+                    </blockquote>
+                    <p>In 2013, with this belief, he convinced partners to "take a leap of faith" with him. This led to the creation of WAH-NGO. He made a significant personal and professional sacrifice, trading "stable, financially rewarding employment" for what he saw as "life-long work in public health and search for health impacts". He recognized WAH's "potential for scale," which proved vital in structuring it as a non-profit designed for expansion, not a temporary project. This career change, from a consultant focused on delivering for others to a purpose-driven non-profit founder, defines Canlas's professional identity. He clearly stated his desire for "fulfillment" and "lasting value and impact." This shows his career choices are not just opportunistic but stem from a personal mission. This strong motivation explains his willingness to give up financial benefits and take on the risks of starting a new organization. Such deep purpose often connects strongly with team members and partners, building commitment and loyalty beyond typical work relationships. This commitment has helped WAH remain strong and grow, showing a leadership approach that puts long-term societal benefit before immediate financial gains.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="wah-milestones" class="content-section mb-16">
+            <h2 class="text-3xl font-bold mb-6 section-title border-b-2 border-orange-500 pb-2">WAH-NGO: Growth & Sustainability Milestones</h2>
+            <div class="bg-white p-6 rounded-lg shadow">
+                <p class="text-lg leading-relaxed mb-6">This section highlights the remarkable growth and impact of Wireless Access for Health (WAH) NGO under Felipe Canlas's leadership. From its initial pilot projects, WAH has become a significant force in Philippine digital health, achieving substantial expansion in reach, partnerships, and, crucially, financial sustainability by transitioning from donor dependency to LGU funding. Explore the key metrics that illustrate this impressive journey.</p>
+                <p class="mb-6">Under Felipe Canlas's leadership, WAH-NGO has grown remarkably. It has become a cornerstone of digital health in the Philippines. It started with four pilot projects and now stands as the "Philippines' biggest and most successful public-private partnership on digital health". The organization's reach has expanded greatly, now serving 270 health facilities in 12 regions and 27 provinces. WAH's partnerships grew from four municipalities to 185 provinces, cities, and municipalities. Many of these are "far-flung, isolated, and poor". This expansion shows a strategic focus on closing health gaps by reaching vulnerable and underserved people.</p>
+                <p class="mb-8">A key sign of WAH's success and Canlas's strategic management is its organizational and financial stability. The organization moved from USD 120,000 in annual donor funding in 2013 to securing USD 1 million annually from partner Local Government Units (LGUs) for its operations. This shift means WAH no longer depends on donors. It now uses a self-sustaining model, deeply integrated within local government. WAH's growth from a few pilot initiatives to a nationwide public-private partnership means more than just scaling a project. It means building a strong public health system. Canlas's background in international studies, public administration, and communication gave him the tools to understand complex multi-stakeholder environments. WAH's funding shift from external donors to steady LGU support shows his mastery of local governance and sustainable financing. He moves beyond relying on outside aid. This shows Canlas's leadership creates change. He does not just manage existing structures; he actively builds and nurtures new collaborations. He acts as an architect of public-private partnerships, skillfully connecting technology, government, and local communities to achieve systemic change in public health. This makes him a key figure in developing national health infrastructure, not just a service provider.</p>
+
+                <h3 class="text-2xl font-semibold mb-6 text-orange-600 text-center">Key Growth Metrics: WAH-NGO (Approx. 2013 to Present)</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="metric-card p-6 rounded-lg shadow-lg text-center">
+                        <h4 class="text-xl font-semibold mb-2 text-orange-700">Health Facilities</h4>
+                        <p class="text-3xl font-bold text-gray-800">4 <span class="text-lg font-normal text-gray-600">to</span> 270</p>
+                        <p class="text-sm text-gray-500 mt-1">Expanded reach to more communities</p>
+                    </div>
+                    <div class="metric-card p-6 rounded-lg shadow-lg text-center">
+                        <h4 class="text-xl font-semibold mb-2 text-orange-700">Partner LGUs</h4>
+                        <p class="text-3xl font-bold text-gray-800">4 <span class="text-lg font-normal text-gray-600">to</span> 185</p>
+                        <p class="text-sm text-gray-500 mt-1">Provinces, cities, and municipalities</p>
+                    </div>
+                    <div class="metric-card p-6 rounded-lg shadow-lg text-center">
+                        <h4 class="text-xl font-semibold mb-2 text-orange-700">Annual Funding</h4>
+                        <p class="text-3xl font-bold text-gray-800">$120K <span class="text-lg font-normal text-gray-600">to</span> $1M</p>
+                        <p class="text-sm text-gray-500 mt-1">Shift from donor to LGU-funded</p>
+                    </div>
+                    <div class="metric-card p-6 rounded-lg shadow-lg text-center">
+                        <h4 class="text-xl font-semibold mb-2 text-orange-700">Team Size</h4>
+                        <p class="text-3xl font-bold text-gray-800">3 <span class="text-lg font-normal text-gray-600">to</span> 22</p>
+                        <p class="text-sm text-gray-500 mt-1">Growth in dedicated professionals</p>
+                    </div>
+                     <div class="metric-card p-6 rounded-lg shadow-lg text-center">
+                        <h4 class="text-xl font-semibold mb-2 text-orange-700">Regions Covered</h4>
+                        <p class="text-3xl font-bold text-gray-800">12</p>
+                        <p class="text-sm text-gray-500 mt-1">Significant nationwide presence</p>
+                    </div>
+                     <div class="metric-card p-6 rounded-lg shadow-lg text-center">
+                        <h4 class="text-xl font-semibold mb-2 text-orange-700">Provinces Covered</h4>
+                        <p class="text-3xl font-bold text-gray-800">27</p>
+                        <p class="text-sm text-gray-500 mt-1">Deep engagement across the country</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="leadership-approach" class="content-section mb-16">
+            <h2 class="text-3xl font-bold mb-6 section-title border-b-2 border-orange-500 pb-2">Leadership & Management Approach</h2>
+            <div class="space-y-6 bg-white p-6 rounded-lg shadow">
+                <p class="text-lg leading-relaxed mb-4">This section delves into Felipe Canlas's distinctive leadership and management style. It covers his strategic vision for scaling WAH-NGO, his operational acumen in achieving financial independence and fostering innovation, and his transformational, collaborative, and impact-driven leadership qualities. His approach prioritizes team development, strong partnerships, and a relentless focus on achieving tangible public health improvements.</p>
+                <div>
+                    <h3 class="text-2xl font-semibold mb-3 text-orange-600">Management Profile: Strategic Vision and Operational Acumen</h3>
+                    <p>Felipe Canlas's management skills show his strategic vision for scaling WAH-NGO, his effective daily operations, and his innovative approach to ensuring long-term sustainability and technological relevance.</p>
+                    <p class="mt-2">His management profile shows a clear strategic vision for scaling WAH-NGO. His initial decision to establish WAH as a non-profit organization stemmed from his belief in its "potential for scale". This foresight allowed WAH to grow rapidly. The growth strategy focused not just on numbers but on deeply integrating WAH's services into existing public health systems, especially in "far-flung, isolated, and poor" municipalities. A core part of his management approach involves building strong, trust-based relationships. Canlas directly links WAH's growth to his "valued relationship with the ministry leaders, local chief executives, health managers, and donor partners".</p>
+                    <p class="mt-2">A key feature of Canlas's management profile is his success in making WAH-NGO financially independent by moving from donor dependency to being mainly LGU-funded. WAH grew from a "team of three consultants" to a "22-strong team" under his leadership. An unusual but effective management choice has been his deliberate decision to "never spend on marketing and advertising". This approach signals deep confidence in WAH's inherent value and proven impact. Felipe Canlas thinks ahead, ensuring WAH stays at the forefront of digital health innovation. He plans to improve WAH's health technology platform "using AI and afford local leaders and communities predictive analytics for timely and informed decision-making" and use "Open-Source technology to deliver quality healthcare to the last mile".</p>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-semibold mb-3 mt-6 text-orange-600">Leadership Style: Transformational, Collaborative, and Impact-Driven</h3>
+                    <p>Felipe Canlas's leadership stands out. It transforms, collaborates, and focuses on achieving real and deep societal impact.</p>
+                    <p class="mt-2">His leadership transforms. This shows in his ability to inspire strong commitment. He convinced his young team to "take a leap of faith" and start WAH-NGO. Developing his team is a core part of his leadership.
+                    <blockquote class="my-4 p-4 bg-orange-50 rounded-md">
+                        "They believed in me and in what I can do and I mentored them, supported and inspired them over the years. Seeing them become professionals and making a difference through our mission is by far, my greatest fulfillment."
+                    </blockquote>
+                    Canlas's leadership is deeply collaborative and relationship-focused. WAH-NGO is known as the "Philippines' biggest and most successful public-private partnership on digital health". He directly credits his success to his "valued relationship with the ministry leaders, local chief executives, health managers, and donor partners".</p>
+                    <p class="mt-2">Canlas's leadership focuses on impact and purpose. His main drive is the "search for health impacts". His constant focus on "the poor and underserved" and his push for policies that "favor the poor" show a strong social justice orientation. A notable part of his leadership is his commitment to constant personal improvement.
+                    <blockquote class="my-4 p-4 bg-orange-50 rounded-md">
+                        "Before WAH, I had to rely on my expertise, education, personal network, and the reputation of the organization I work with... Now, I carry gravitas when I convince people and teams to accomplish things with me and my NGO."
+                    </blockquote>
+                     This earned authority allows him to influence without relying only on formal power structures. His personal journey of giving up financial gain for deeper fulfillment suggests his resilience is deeply rooted in his strong commitment to his core purpose.
+                    </p>
+                    <button id="generateLeadershipInsight" class="mt-6 px-6 py-3 bg-orange-600 text-white font-semibold rounded-md shadow-md hover:bg-orange-700 transition-colors">✨ Generate Leadership Insight</button>
+                    <div id="leadershipInsightOutput" class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-md text-blue-800 hidden"></div>
+                    <div id="leadershipLoading" class="loading-indicator hidden">Generating insight...</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="culture-values" class="content-section mb-16">
+            <h2 class="text-3xl font-bold mb-6 section-title border-b-2 border-orange-500 pb-2">Cultivating Organizational Culture & Values</h2>
+            <div class="space-y-6 bg-white p-6 rounded-lg shadow">
+                <p class="text-lg leading-relaxed mb-4">This section explores Felipe Canlas's dedication to building a strong and positive organizational culture at WAH-NGO. It details how he fosters a sense of internal community, shared mission, and mutual support. Importantly, this cultural vision extends beyond WAH to influence and mentor other civil society organizations, reflecting a commitment to strengthening the broader public health ecosystem through shared values and collaborative growth.</p>
+                <p>Felipe Canlas actively shapes and values WAH-NGO's organizational culture. He focuses on building a strong sense of community, shared mission, and mutual support, both inside and outside the organization.</p>
+                <p class="mt-2">He places great importance on building a strong internal community. He calls his "greatest achievement as an influencer... my team". WAH's culture began when Canlas convinced his young team to "take a leap of faith". His active role in mentoring, supporting, and inspiring his team over the years creates a nurturing environment.</p>
+                <p class="mt-2">Canlas's vision for organizational culture goes beyond WAH's internal work. He speaks of "The community I created and now sustained by the WAH-NGO". In 2022, WAH took on a "big brother/sister" role, helping "smaller and newly registered NGOs in Tarlac". As the elected leader of the Federation of Tarlac Civil Society Organizations (CSOs), Canlas aims to "lead and shepherd numerous People’s Organizations, Cooperatives, and NGOs towards a more fulfilling role in Philippine society".</p>
+                <p class="mt-2">WAH's identity deeply roots in its values. Its "strong brand of service" is a core cultural principle. Canlas's "certitude that I have chosen the right path of non-profit" spreads throughout the organization. Also, his part in crafting "ethical guidelines in the use of AI in health" suggests a cultural focus on using technology responsibly. WAH's success in moving from donor-funded to LGU-funded operations, and its "big brother/sister" role for other NGOs, suggests Canlas built a repeatable model for local organizational sustainability, often referred to as the "WAH Way."</p>
+            </div>
+        </section>
+
+        <section id="policy-influence" class="content-section mb-16">
+            <h2 class="text-3xl font-bold mb-6 section-title border-b-2 border-orange-500 pb-2">Power and Influence: Shaping Public Health Policy</h2>
+             <div class="bg-white p-6 rounded-lg shadow">
+                <p class="text-lg leading-relaxed mb-6">Explore how Felipe Canlas strategically leverages his evolved influence and "earned gravitas" to drive significant changes in public health policy and practice in the Philippines. This section details his methods, key legislative victories, and the tangible impacts of his advocacy, including financial empowerment for local governments and improved health outcomes. Use the filter and sort options in the table below to interact with the data on his policy contributions.</p>
+                <p>Felipe Canlas understands and uses power and influence strategically. His authority has grown, and he uses specific methods and achievements to greatly impact public health policy and practice in the Philippines. His journey clearly shows how his influence grew from relying on external reputations to now carrying "gravitas". His strategic choice to "never spend on marketing and advertising" further proves his influence builds on real impact.</p>
+                <p class="mt-2">As a "well-regarded CSO leader in health" and elected leader of the Federation of Tarlac CSOs, he actively uses chances to "speak before professional groups and my participation in international and national working groups to influence plans and policies and advocate programs". He successfully pushed for "more funds and expanded roles for local government units (LGUs) in the implementation of universal healthcare" and played a key role in advocating for RA 11223 (Universal Health Care Act) and RA 10354 (Reproductive Health Law). He constantly provides input for national policies like the Philippine Digital Health Master Plans and Health Privacy Guidelines, drawing from "more than a decade of working on the ground".</p>
+                <p class="mt-2">Felipe Canlas's influence brings concrete financial and operational results. He successfully pushed for the "digitization of reimbursements and increase of case rates", leading to 185 LGUs receiving "more than PHP2 Billion (USD40M) from PhilHealth". His operational influence shows in the 2023 design of the Dashboard for risky and teenage pregnancies, the "first and only one in the country," which improved care for over 5,000 mothers and prevented at least a thousand repeat teenage pregnancies. WAH's wide "reach and influence" means "funding organizations now seek our partnership to implement grassroots health programs."</p>
+
+                <div class="mt-8">
+                    <h3 class="text-2xl font-semibold mb-4 text-orange-600">Policy Advocacy and Impact Summary</h3>
+                    <input type="text" id="policyFilter" class="w-full p-2 border border-gray-300 rounded-md mb-4" placeholder="Filter policies, roles, or outcomes...">
+                    <div class="table-container border border-gray-200 rounded-lg">
+                        <table class="min-w-full divide-y divide-gray-200 table-interactive" id="policyTable">
+                            <thead class="bg-orange-100">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-orange-700 uppercase tracking-wider" data-column="0">Legislation/Policy Influenced</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-orange-700 uppercase tracking-wider" data-column="1">Felipe Canlas's Role</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-orange-700 uppercase tracking-wider" data-column="2">Tangible Outcomes/Impact</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-orange-700 uppercase tracking-wider">Explain</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="future-outlook" class="content-section mb-16">
+            <h2 class="text-3xl font-bold mb-6 section-title border-b-2 border-orange-500 pb-2">Future Vision & Continued Evolution</h2>
+            <div class="space-y-6 bg-white p-6 rounded-lg shadow">
+                <p class="text-lg leading-relaxed mb-4">This final section looks at Felipe Canlas's aspirations for WAH-NGO and his personal commitment to ongoing growth as a "Resilient Changemaker." It covers his plans for international expansion, technological advancements like AI integration, and his enduring dedication to strengthening civil society and advocating for transformative laws. His vision is one of proactive adaptation and ever-increasing impact.</p>
+                <p>Felipe Canlas's forward-looking goals for WAH-NGO and his personal commitment to constant growth as a leader show his ambition. He aims to expand WAH's international reach, advance its technology, and strengthen civil society in the Philippines.</p>
+                <p class="mt-2">He sees WAH's influence growing beyond national borders. He wants WAH to "increase and strengthen our presence at the international stage especially in South East Asia". A core part of his future vision involves improving WAH's technology. He plans to "elevate our health technology platform by using AI and afford local leaders and communities predictive analytics for timely and informed decision-making" and "use Open-Source technology to deliver quality healthcare to the last mile".</p>
+                <p class="mt-2">Canlas deeply commits to strengthening civil society in the Philippines. He plans to "deepen my role and involvement in organizing CSOs in the Philippines, starting with strengthening the network of NGOs in Tarlac". He hopes to "use my expertise and influence to bring sustainability and stability" to local NGOs. Canlas also envisions having "a bigger role and a louder voice for the CSOs and LGUs in the passage of transformative laws like the CSE Bill and amendments to the RA 11223".</p>
+                <p class="mt-2">Felipe Canlas believes in "life-long learning." He feels a deep duty to his team, partners, and the Filipino patients they serve to "continue to improve as a leader and change-maker". He knows the "journey is now more daunting and our goals more challenging," meaning he must "be bolder, more equipped with the latest knowledge and skills, and more outstanding". His willingness to "take risks and converse, convince big tech companies to work with WAH and local CSOs - instead of competing with them" shows an adaptive and forward-thinking leadership approach.</p>
+
+                <hr class="my-8 border-orange-300">
+                <h3 class="text-2xl font-semibold mb-3 text-orange-600">Conclusion</h3>
+                <p>Felipe Canlas's career tells a powerful story of transformative leadership in Philippine public health. His journey, marked by a deliberate shift from a high-paying consulting career to founding WAH-NGO, shows a deep commitment to creating lasting social value. As a manager, Canlas shows exceptional skill in scaling initiatives and achieving financial independence. His leadership style transforms; he inspires and mentors his team, fostering their professional growth and a shared mission. Canlas actively shapes WAH's organizational culture, building a sense of community and shared purpose internally and externally. His use of power and influence has changed from using external institutional credibility to wielding "earned gravitas" from WAH's clear successes. Looking ahead, Canlas envisions WAH expanding its international presence, integrating advanced technologies like AI, and continuing to strengthen civil society. Felipe Canlas stands as a key figure who consistently connects policy with practice, driving systemic change and leaving a lasting mark on public health in the Philippines, especially for its most vulnerable people.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-orange-700 text-white text-center p-6 mt-12">
+        <p>&copy; <span id="currentYear"></span> Profile of Felipe Canlas. Information based on provided public domain materials.</p>
+        <p class="text-xs mt-1">Interactive visualization created to explore his contributions.</p>
+    </footer>
+
+    <div id="policyExplanationModal" class="modal flex">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h3 class="text-2xl font-semibold mb-4 text-orange-600" id="modalTitle">Policy Impact Explanation</h3>
+            <div id="modalContent" class="text-lg leading-relaxed text-gray-700"></div>
+            <div id="modalLoading" class="loading-indicator hidden">Generating explanation...</div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        const policyData = [
+            { legislation: "RA 11223 (Universal Health Care Act)", role: "Member of national/expert panels, advocate, mobilizer of LGU support", impact: "Increased funds and expanded roles for LGUs in UHC implementation" },
+            { legislation: "RA 10354 (Reproductive Health Law)", role: "Advocate", impact: "Contributed to the passage of a landmark health law" },
+            { legislation: "Comprehensive Sexual Education (CSE) Bill", role: "Mobilizing LGU support (ongoing)", impact: "Aims to pass transformative legislation" },
+            { legislation: "Amendments to RA 11223", role: "Mobilizing LGU support (ongoing)", impact: "Aims to grant more power to LGUs in health governance" },
+            { legislation: "Philippine Digital Health Master Plans (1st & 2nd)", role: "Input provider (from frontline experience)", impact: "Contributed to faster technology adoption, increased access to quality healthcare, reduced out-of-pocket expenses" },
+            { legislation: "Health Privacy Guidelines", role: "Input provider", impact: "Contributed to responsible data management in health" },
+            { legislation: "Health Standards for System Interoperability", role: "Input provider", impact: "Contributed to seamless integration of health information systems" },
+            { legislation: "Ethical Guidelines for AI in Health", role: "Participating in discussions", impact: "Proactive engagement in responsible technological advancement" },
+            { legislation: "Digitization of Reimbursements & Increased Case Rates", role: "Advocate, helped push for", impact: "185 LGUs received >PHP 2 Billion (USD 40M) from PhilHealth, used for service improvement" },
+            { legislation: "Dashboard for Risky/Teenage Pregnancies (2023)", role: "Designed, created strategies/advocacy plans", impact: "Improved prenatal/postpartum care for >5,000 mothers, prevented >1,000 repeat teenage pregnancies, generated PHP 20M (USD 340K) reimbursements for facilities" }
+        ];
+
+        const policyTableBody = document.getElementById('policyTable').getElementsByTagName('tbody')[0];
+        const policyFilterInput = document.getElementById('policyFilter');
+        const policyExplanationModal = document.getElementById('policyExplanationModal');
+        const modalContent = document.getElementById('modalContent');
+        const modalLoading = document.getElementById('modalLoading');
+        const modalCloseButton = document.querySelector('#policyExplanationModal .close-button');
+        const generateLeadershipInsightButton = document.getElementById('generateLeadershipInsight');
+        const leadershipInsightOutput = document.getElementById('leadershipInsightOutput');
+        const leadershipLoading = document.getElementById('leadershipLoading');
+
+        // Function to call Gemini API
+        async function callGeminiAPI(prompt, outputElement, loadingElement) {
+            outputElement.innerHTML = '';
+            outputElement.classList.add('hidden');
+            loadingElement.classList.remove('hidden');
+
+            let chatHistory = [];
+            chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+            const payload = { contents: chatHistory };
+            const apiKey = ""; // Canvas will provide this at runtime
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    outputElement.innerHTML = text;
+                    outputElement.classList.remove('hidden');
+                } else {
+                    outputElement.innerHTML = 'Error: Could not retrieve response from LLM. Please try again.';
+                    outputElement.classList.remove('hidden');
+                    console.error('LLM response structure unexpected:', result);
+                }
+            } catch (error) {
+                outputElement.innerHTML = 'Error: Failed to connect to LLM. Please check your network or try again later.';
+                outputElement.classList.remove('hidden');
+                console.error('Error calling Gemini API:', error);
+            } finally {
+                loadingElement.classList.add('hidden');
+            }
+        }
+
+        // Leadership Insight Generator
+        generateLeadershipInsightButton.addEventListener('click', async () => {
+            const leadershipText = document.querySelector('#leadership-approach .space-y-6').innerText;
+            const prompt = `Based on the following text about Felipe Canlas's leadership and management approach, generate a concise (2-3 sentences) insightful statement about his transformational and collaborative leadership style, focusing on how he inspires teams and builds partnerships: \n\n"${leadershipText}"`;
+            await callGeminiAPI(prompt, leadershipInsightOutput, leadershipLoading);
+        });
+
+        // Policy Impact Explainer
+        function renderPolicyTable(data) {
+            policyTableBody.innerHTML = "";
+            data.forEach(item => {
+                let row = policyTableBody.insertRow();
+                let cell1 = row.insertCell();
+                let cell2 = row.insertCell();
+                let cell3 = row.insertCell();
+                let cell4 = row.insertCell(); // New cell for the button
+
+                cell1.innerHTML = item.legislation;
+                cell2.innerHTML = item.role;
+                cell3.innerHTML = item.impact;
+
+                const explainButton = document.createElement('button');
+                explainButton.className = 'px-3 py-1 bg-blue-500 text-white text-sm rounded-md hover:bg-blue-600 transition-colors';
+                explainButton.innerHTML = '✨ Explain Impact';
+                explainButton.onclick = async () => {
+                    const prompt = `Explain the significance of "${item.legislation}" and its impact: "${item.impact}" in simple, easy-to-understand terms for a general audience. Focus on why this policy or outcome is important for public health in the Philippines.`;
+                    document.getElementById('modalTitle').textContent = `Explaining: ${item.legislation}`;
+                    policyExplanationModal.style.display = 'flex'; // Show modal
+                    await callGeminiAPI(prompt, modalContent, modalLoading);
+                };
+                cell4.appendChild(explainButton);
+
+                cell1.className = "px-6 py-4 whitespace-nowrap text-sm text-gray-700";
+                cell2.className = "px-6 py-4 whitespace-nowrap text-sm text-gray-700";
+                cell3.className = "px-6 py-4 text-sm text-gray-700";
+                cell4.className = "px-6 py-4 whitespace-nowrap text-sm text-gray-700";
+            });
+        }
+
+        modalCloseButton.addEventListener('click', () => {
+            policyExplanationModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target == policyExplanationModal) {
+                policyExplanationModal.style.display = 'none';
+            }
+        });
+
+        let currentSortColumn = -1;
+        let sortAscending = true;
+
+        document.querySelectorAll('#policyTable th').forEach(headerCell => {
+            if (headerCell.dataset.column) { // Only apply to sortable columns
+                headerCell.addEventListener('click', () => {
+                    const columnIdx = parseInt(headerCell.dataset.column);
+                    if (currentSortColumn === columnIdx) {
+                        sortAscending = !sortAscending;
+                    } else {
+                        currentSortColumn = columnIdx;
+                        sortAscending = true;
+                    }
+                    sortPolicyTable(columnIdx, sortAscending);
+                });
+            }
+        });
+
+        function sortPolicyTable(columnIdx, ascending) {
+            const sortedData = [...policyData].sort((a, b) => {
+                const valA = Object.values(a)[columnIdx].toLowerCase();
+                const valB = Object.values(b)[columnIdx].toLowerCase();
+                if (valA < valB) return ascending ? -1 : 1;
+                if (valA > valB) return ascending ? 1 : -1;
+                return 0;
+            });
+            renderPolicyTable(sortedData);
+            filterPolicyTable(); // Re-apply filter and highlights after sort
+        }
+        
+        policyFilterInput.addEventListener('keyup', filterPolicyTable);
+
+        function filterPolicyTable() {
+            const filterText = policyFilterInput.value.toLowerCase();
+            const rows = policyTableBody.getElementsByTagName('tr');
+            for (let i = 0; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName('td');
+                let match = false;
+                for (let j = 0; j < cells.length - 1; j++) { // Exclude the last cell (button) from filtering
+                    if (cells[j].textContent.toLowerCase().includes(filterText)) {
+                        match = true;
+                        break;
+                    }
+                }
+                if (match) {
+                    rows[i].style.display = "";
+                    // Highlight matches
+                    for (let j = 0; j < cells.length - 1; j++) { // Exclude the last cell (button) from highlighting
+                        let cellText = cells[j].textContent;
+                        const regex = new RegExp(`(${filterText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+                        cells[j].innerHTML = cellText.replace(regex, `<span class="highlight">$1</span>`);
+                    }
+                } else {
+                    rows[i].style.display = "none";
+                }
+            }
+             // If no filter text, remove highlights
+            if (!filterText) {
+                for (let i = 0; i < rows.length; i++) {
+                     const cells = rows[i].getElementsByTagName('td');
+                     for (let j = 0; j < cells.length - 1; j++) { // Exclude the last cell (button)
+                        cells[j].innerHTML = cells[j].textContent; // Removes span.highlight
+                     }
+                }
+            }
+        }
+
+        renderPolicyTable(policyData);
+
+        // Smooth scrolling and active nav link
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sections = document.querySelectorAll('.content-section');
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetSection = document.querySelector(targetId);
+                if (targetSection) {
+                     // Calculate position considering the fixed header
+                    const headerOffset = document.querySelector('header').offsetHeight;
+                    const elementPosition = targetSection.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        function onScroll() {
+            let currentSectionId = '';
+            const headerHeight = document.querySelector('header').offsetHeight;
+
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - headerHeight - 50; // 50px buffer
+                if (window.pageYOffset >= sectionTop) {
+                    currentSectionId = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${currentSectionId}`) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        window.addEventListener('scroll', onScroll);
+        onScroll(); // Call on load to set initial active link
+
+    </script>
+</body>
+</html>
